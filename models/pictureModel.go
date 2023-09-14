@@ -5,8 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// PictureMode struct
-type PictureMode struct {
+// PictureModel struct
+type Picture struct {
 	gorm.Model
 
 	ID     uuid.UUID `gorm:"not null;unique_index" json:"id"`
