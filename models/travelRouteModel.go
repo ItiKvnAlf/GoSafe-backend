@@ -15,5 +15,5 @@ type TravelRoute struct {
 	StartPoint string    `gorm:"not null" json:"start_point"`
 	EndPoint   string    `gorm:"not null" json:"end_point"`
 	Date       time.Time `gorm:"not null" json:"date"`
-	Pictures   []Picture
+	Pictures   []Picture `gorm:"foreignkey:TravelRouteID"`
 }

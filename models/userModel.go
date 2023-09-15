@@ -16,5 +16,5 @@ type User struct {
 	Address    string    `gorm:"not null" json:"address"`
 	ProfilePic string    `gorm:"not null" json:"profile_pic"`
 	Rut        string    `gorm:"not null;unique_index" json:"rut"`
-	Contacts   []Contact
+	Contacts   []Contact `gorm:"foreignkey:UserID"`
 }

@@ -9,6 +9,9 @@ import (
 type Picture struct {
 	gorm.Model
 
-	ID    uuid.UUID `gorm:"not null;unique_index" json:"id"`
-	Image string    `gorm:"not null;unique_index" json:"image"`
+	ID            uuid.UUID `gorm:"not null;unique_index" json:"id"`
+	TravelRouteID uuid.UUID `gorm:"not null" json:"travel_route_id"`
+	Image         string    `gorm:"not null;unique_index" json:"image"`
+
+	TravelRoute TravelRoute `gorm:"foreignkey:TravelRouteID"`
 }
