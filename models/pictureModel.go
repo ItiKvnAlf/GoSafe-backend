@@ -2,13 +2,10 @@ package models
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 // PictureModel struct
 type Picture struct {
-	gorm.Model
-
 	ID            uuid.UUID `gorm:"not null;unique_index" json:"id"`
 	TravelRouteID uuid.UUID `gorm:"not null" json:"travel_route_id"`
 	Image         string    `gorm:"not null;unique_index" json:"image"`

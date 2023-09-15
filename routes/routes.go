@@ -9,5 +9,6 @@ import (
 func Setup(app *fiber.App) {
 
 	app.Get("/users", controllers.GetUsers)
+	app.Post("/users", controllers.CreateUser)
 
 }

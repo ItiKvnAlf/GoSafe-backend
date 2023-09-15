@@ -2,13 +2,10 @@ package models
 
 import (
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 // Message struct
 type Message struct {
-	gorm.Model
-
 	ID             uuid.UUID   `gorm:"not null;unique_index" json:"id"`
 	UserID         uuid.UUID   `gorm:"not null" json:"user_id"`
 	TravelRouteID  uuid.UUID   `gorm:"not null" json:"travel_route_id"`
