@@ -13,4 +13,6 @@ type Contact struct {
 	Name  string    `gorm:"not null;unique_index" json:"name"`
 	Email string    `gorm:"not null;unique_index" json:"email"`
 	Phone string    `gorm:"not null;unique_index" json:"phone"`
+	User  User
+	// UserId string `gorm:"not null;unique_index" json:"user_id"`
 }
