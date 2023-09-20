@@ -16,5 +16,5 @@ type Message struct {
 	Geolocation    Geolocation `gorm:"foreignkey:GeolocationID"`
 	Contact        Contact     `gorm:"foreignkey:ContactID"`
 	DefaultMessage string      `gorm:"not null" json:"default_message"`
-	LastPicture    string      `gorm:"not null" json:"lasg_picture"`
+	LastPicture    uuid.UUID   `gorm:"not null" json:"last_picture"`
 }

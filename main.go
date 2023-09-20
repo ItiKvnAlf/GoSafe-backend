@@ -25,7 +25,7 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New())
 
-	portString := os.Getenv("PORT")
+	portString := os.Getenv("APP_PORT")
 	if portString == "" {
 		log.Fatal("PORT is not set in .env file")
 	}
