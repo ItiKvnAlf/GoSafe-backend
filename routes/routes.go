@@ -13,5 +13,6 @@ func Setup(app *fiber.App) {
 	userGroup.Get("/", controllers.GetUsers)
 	userGroup.Post("/", controllers.CreateUser)
 	userGroup.Get("/:email", controllers.GetUser)
+	userGroup.Put("/:email", controllers.UpdateUser)
 
 }
