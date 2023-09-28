@@ -5,6 +5,7 @@ import (
 	"backend/models"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func GetContacts(c *fiber.Ctx) error {
@@ -17,4 +18,32 @@ func GetContacts(c *fiber.Ctx) error {
 		"data":    contacts,
 	})
 
+}
+
+// testear si se crea el contacto con el id del usuario
+func CreateContact(c *fiber.Ctx) error {
+	var contact models.Contact
+	var user models.User
+	if err := c.BodyParser(&contact); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Error while parsing",
+		})
+	}
+	contact.ID = uuid.New()
+	if user.ID == contact.UserID {
+		db.DB.Create(&contact)
+
+		return c.Status(201).JSON(fiber.Map{
+			"success": true,
+			"message": "success",
+			"data":    contact,
+		})
+	}
+
+	return c.Status(201).JSON(fiber.Map{
+		"success": true,
+		"message": "success",
+		"data":    contact,
+	})
 }
