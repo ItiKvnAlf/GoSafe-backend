@@ -33,3 +33,34 @@ func CreateUser(c *fiber.Ctx) error {
 		"data":    user,
 	})
 }
+
+func UpdateUser(c *fiber.Ctx) error {
+
+	userID := c.Params("id")
+
+	var user models.User
+	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{"message": "Usuario no encontrado"})
+	}
+
+	updatedUser := new(models.User)
+	if err := c.BodyParser(updatedUser); err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": "Solicitud incorrecta", "error": err})
+	}
+
+	user.Name = updatedUser.Name
+	user.Email = updatedUser.Email
+	user.Password = updatedUser.Password
+	user.Phone = updatedUser.Phone
+	user.Address = updatedUser.Address
+	user.ProfilePic = updatedUser.ProfilePic
+	user.Rut = updatedUser.Rut
+
+	db.DB.Save(&user)
+
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+		"message": "Usuario actualizado exitosamente",
+		"data":    user,
+	})
+}
