@@ -3,13 +3,14 @@ package controllers
 import (
 	db "backend/config"
 	"backend/models"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 )
 
 func GetUsers(c *fiber.Ctx) error {
+
+	//falta relacionar contactos con una funcion
 	var users []models.User
 	db.DB.Select("id, name, email, password, phone, address, profile_pic, rut").Find(&users)
 
@@ -40,15 +41,13 @@ func CreateUser(c *fiber.Ctx) error {
 
 	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
 
-	fmt.Println("user ID", user.ID)
-	fmt.Println("user Phone", user.Phone)
-	fmt.Println("user Rut", user.Rut)
 	if user.ID != uuid.Nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "User already registred"})
 	}
 
 	user.ID = uuid.New()
+	user.Contacts = []models.Contact{}
 
 	//create user
 	db.DB.Create(&user)
@@ -61,8 +60,11 @@ func CreateUser(c *fiber.Ctx) error {
 }
 func GetUser(c *fiber.Ctx) error {
 	var user models.User
-	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ?", c.Params("email")).Find(&user).First(&user)
-	if user.ID == uuid.Nil {
+
+	userID := c.Params("id")
+
+	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("id = ?", userID).Find(&user).First(&user)
+	if user.ID == uuid.Nil || user.Email == "" {
 		return c.Status(404).JSON(fiber.Map{"message": "User not found"})
 	}
 
@@ -79,12 +81,15 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	var user models.User
 	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{"message": "Usuario no encontrado"})
+		return c.Status(404).JSON(fiber.Map{
+			"message": "User not found"})
 	}
 
 	updatedUser := new(models.User)
 	if err := c.BodyParser(updatedUser); err != nil {
-		return c.Status(400).JSON(fiber.Map{"message": "Solicitud incorrecta", "error": err})
+		return c.Status(400).JSON(fiber.Map{
+			"message": "Bad Request",
+			"error":   err})
 	}
 
 	user.Name = updatedUser.Name
@@ -93,7 +98,6 @@ func UpdateUser(c *fiber.Ctx) error {
 	user.Phone = updatedUser.Phone
 	user.Address = updatedUser.Address
 	user.ProfilePic = updatedUser.ProfilePic
-	user.Rut = updatedUser.Rut
 
 	db.DB.Save(&user)
 
