@@ -23,27 +23,34 @@ func GetContacts(c *fiber.Ctx) error {
 // testear si se crea el contacto con el id del usuario
 func CreateContact(c *fiber.Ctx) error {
 	var contact models.Contact
-	var user models.User
+
 	if err := c.BodyParser(&contact); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"success": false,
 			"message": "Error while parsing",
 		})
 	}
-	contact.ID = uuid.New()
-	if user.ID == contact.UserID {
-		db.DB.Create(&contact)
 
-		return c.Status(201).JSON(fiber.Map{
-			"success": true,
-			"message": "success",
-			"data":    contact,
+	var user models.User
+	if err := db.DB.Where("id = ?", contact.UserID).First(&user).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "User not found",
+		})
+	}
+
+	contact.ID = uuid.New()
+
+	if err := db.DB.Create(&contact).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Error while creating contact",
 		})
 	}
 
 	return c.Status(201).JSON(fiber.Map{
 		"success": true,
-		"message": "success",
+		"message": "Contact created successfully",
 		"data":    contact,
 	})
 }
