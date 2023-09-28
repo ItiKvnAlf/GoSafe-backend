@@ -20,6 +20,20 @@ func GetContacts(c *fiber.Ctx) error {
 
 }
 
+func GetContactUser(c *fiber.Ctx) error {
+
+	userID := c.Params("user_id")
+
+	var contacts []models.Contact
+	db.DB.Select("id, user_id, name, email, phone").Where("user_id = ?", userID).Find(&contacts)
+
+	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+		"message": "success",
+		"data":    contacts,
+	})
+}
+
 // testear si se crea el contacto con el id del usuario
 func CreateContact(c *fiber.Ctx) error {
 	var contact models.Contact
