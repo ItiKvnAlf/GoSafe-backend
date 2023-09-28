@@ -3,6 +3,7 @@ package controllers
 import (
 	db "backend/config"
 	"backend/models"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -20,15 +21,31 @@ func GetUsers(c *fiber.Ctx) error {
 }
 
 func CreateUser(c *fiber.Ctx) error {
+
+	/*
+		hacer test de que no se pueda crear un usuario con el mismo :
+		   	email
+		   	phone
+		   	rut
+
+		hacer test de que se pueda crear un usuario con el mismo :
+			address
+	*/
 	var user models.User
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(400).JSON(fiber.Map{"message": "Bad request", "error": err})
+		return c.Status(400).JSON(fiber.Map{
+			"message": "Bad request",
+			"error":   err})
 	}
 
-	db.DB.Select("id,email").Where("email = ?", user.Email).First(&user)
+	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
 
+	fmt.Println("user ID", user.ID)
+	fmt.Println("user Phone", user.Phone)
+	fmt.Println("user Rut", user.Rut)
 	if user.ID != uuid.Nil {
-		return c.Status(400).JSON(fiber.Map{"message": "User already exists"})
+		return c.Status(400).JSON(fiber.Map{
+			"message": "User already registred"})
 	}
 
 	user.ID = uuid.New()
