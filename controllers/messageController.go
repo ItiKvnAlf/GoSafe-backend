@@ -5,6 +5,7 @@ import (
 	"backend/models"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func GetMessageTravel(c *fiber.Ctx) error {
@@ -15,6 +16,49 @@ func GetMessageTravel(c *fiber.Ctx) error {
 	db.DB.Select(("id,user_id,travel_route_id,geolocation_id,last_picture,default_message")).Where("travel_route_id = ?", travelRouteID).Find(&message)
 
 	return c.Status(200).JSON(fiber.Map{
+		"success": true,
+		"message": "success",
+		"data":    message,
+	})
+}
+
+func CreateMesssage(c *fiber.Ctx) error {
+	var message models.Message
+
+	if err := c.BodyParser(&message); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"success": false,
+			"message": "Error while parsing",
+		})
+	}
+	var user models.User
+
+	if err := db.DB.Where("id = ?", message.UserID).First(&user).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "User not found",
+		})
+	}
+
+	var travelRoute models.TravelRoute
+
+	if err := db.DB.Where("id = ?", message.TravelRouteID).First(&travelRoute).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "Travel Route not found",
+		})
+	}
+
+	message.ID = uuid.New()
+
+	if err := db.DB.Create(&message).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"success": false,
+			"message": "Error while creating",
+		})
+	}
+
+	return c.Status(201).JSON(fiber.Map{
 		"success": true,
 		"message": "success",
 		"data":    message,
