@@ -23,6 +23,7 @@ func GetPicturesTravel(c *fiber.Ctx) error {
 
 }
 
+// testear si se crea la imagen con su ruta de viaje
 func CreatePicture(c *fiber.Ctx) error {
 	var picture models.Picture
 
