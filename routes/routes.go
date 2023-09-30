@@ -15,4 +15,7 @@ func Setup(app *fiber.App) {
 	userGroup.Get("/:id", controllers.GetUser)
 	userGroup.Put("/:id", controllers.UpdateUser)
 
+	authGroup := app.Group("/auth")
+
+	authGroup.Post("/signup", controllers.SignUp)
 }
