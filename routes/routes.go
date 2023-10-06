@@ -31,4 +31,9 @@ func Setup(app *fiber.App) {
 	pictureGroup.Get("/:travel_route_id", controllers.GetPicturesTravel)
 	pictureGroup.Post("/", controllers.CreatePicture)
 
+	travelRouteGroup := app.Group("/travel_routes")
+
+	travelRouteGroup.Get("/:user_id", controllers.GetTravelRoutes)
+	travelRouteGroup.Post("/", controllers.CreateTravelRoute)
+
 }
