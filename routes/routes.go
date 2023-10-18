@@ -12,8 +12,11 @@ func Setup(app *fiber.App) {
 
 	userGroup.Get("/", controllers.GetUsers)
 	userGroup.Post("/", controllers.CreateUser)
-	userGroup.Get("/:id", controllers.GetUser)
+	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
+	userGroup.Get("/:email", controllers.GetUser)
+	userGroup.Put("/changePassword/", controllers.UpdatePassword)
 	userGroup.Put("/:id", controllers.UpdateUser)
+	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
 
 	authGroup := app.Group("/auth")
 
