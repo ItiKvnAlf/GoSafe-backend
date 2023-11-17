@@ -31,6 +31,23 @@ func CreateMesssage(c *fiber.Ctx) error {
 			"message": "Error while parsing",
 		})
 	}
+	var user models.User
+
+	if err := db.DB.Where("id = ?", message.UserID).First(&user).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "User not found",
+		})
+	}
+
+	var travelRoute models.TravelRoute
+
+	if err := db.DB.Where("id = ?", message.TravelRouteID).First(&travelRoute).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"success": false,
+			"message": "Travel Route not found",
+		})
+	}
 
 	message.ID = uuid.New()
 

@@ -7,6 +7,5 @@ import (
 // Geolocation struct
 type Geolocation struct {
 	ID           uuid.UUID `gorm:"not null;unique_index" json:"id"`
-	CurrentPoint string    `gorm:"not null" json:"current_point"`
-	TravelRefer  uuid.UUID `gorm:"not null" json:"travel_refer"`
+	CurrentPoint string    `gorm:"not null" json:"current_point"` // Change type
 }
