@@ -30,7 +30,22 @@ func Connect() {
 
 }
 
-func autoMigrate(connection *gorm.DB) {
-	//connection.Debug().AutoMigrate(&models.City{}) //Informacion por consola
-	connection.AutoMigrate(&models.Contact{}, &models.Geolocation{}, &models.Message{}, &models.Picture{}, &models.TravelRoute{}, &models.User{})
+func autoMigrate(connection *gorm.DB) error {
+
+	modelsToMigrate := []interface{}{
+		&models.Contact{},
+		&models.Geolocation{},
+		&models.Message{},
+		&models.Picture{},
+		&models.TravelRoute{},
+		&models.User{},
+	}
+
+	if err := connection.AutoMigrate(modelsToMigrate...); err != nil {
+		fmt.Println("Error during AutoMigrate:", err)
+		return err
+	}
+
+	fmt.Println("AutoMigrate completed successfully")
+	return nil
 }
