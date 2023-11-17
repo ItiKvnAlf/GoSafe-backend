@@ -8,12 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetPicturesTravel(c *fiber.Ctx) error {
+func GetPictures(c *fiber.Ctx) error {
 
-	travelRouteID := c.Params("travel_route_id")
+	PictureID := c.Params("picture_id")
 
 	var pictures []models.Picture
-	db.DB.Select(("id,travel_route_id,image")).Where("travel_route_id = ?", travelRouteID).Find(&pictures)
+	db.DB.Select(("id,image")).Where("picture_id = ?", PictureID).Find(&pictures)
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,
@@ -31,14 +31,6 @@ func CreatePicture(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{
 			"success": false,
 			"message": "Error while parsing",
-		})
-	}
-
-	var travelRoute models.TravelRoute
-	if err := db.DB.Where("id = ?", picture.TravelRouteID).First(&travelRoute).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"success": false,
-			"message": "Travel Route not found",
 		})
 	}
 

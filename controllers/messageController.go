@@ -10,10 +10,10 @@ import (
 
 func GetMessageTravel(c *fiber.Ctx) error {
 
-	travelRouteID := c.Params("travel_route_id")
+	ID := c.Params("messageID")
 
 	var message []models.Message
-	db.DB.Select(("id,user_id,travel_route_id,geolocation_id,last_picture,default_message")).Where("travel_route_id = ?", travelRouteID).Find(&message)
+	db.DB.Select(("id,default_message")).Where("messageID = ?", ID).Find(&message)
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,
@@ -31,26 +31,8 @@ func CreateMesssage(c *fiber.Ctx) error {
 			"message": "Error while parsing",
 		})
 	}
-	var user models.User
-
-	if err := db.DB.Where("id = ?", message.UserID).First(&user).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"success": false,
-			"message": "User not found",
-		})
-	}
-
-	var travelRoute models.TravelRoute
-
-	if err := db.DB.Where("id = ?", message.TravelRouteID).First(&travelRoute).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"success": false,
-			"message": "Travel Route not found",
-		})
-	}
 
 	message.ID = uuid.New()
-
 	if err := db.DB.Create(&message).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,
