@@ -53,13 +53,13 @@ func CreateUser(c *fiber.Ctx) error {
 	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
 
 	//verify that user does not already exist
-	if user.ID != uuid.Nil {
+	if user.UserID != uuid.Nil {
 		return c.Status(200).JSON(fiber.Map{
 			"message": "User already registered"})
 	}
 
 	//set uuid
-	user.ID = uuid.New()
+	user.UserID = uuid.New()
 
 	//set contacts
 	user.Contacts = []models.Contact{}
@@ -91,7 +91,7 @@ func GetUser(c *fiber.Ctx) error {
 	userEmail := c.Params("email")
 
 	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ?", userEmail).Find(&user).First(&user)
-	if user.ID == uuid.Nil || user.Email == "" {
+	if user.UserID == uuid.Nil || user.Email == "" {
 		return c.Status(404).JSON(fiber.Map{"message": "User not found"})
 	}
 

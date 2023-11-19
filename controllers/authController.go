@@ -42,7 +42,7 @@ func SignIn(c *fiber.Ctx) error {
 	}
 	//search user
 	db.DB.Where("email = ?", body.Email).First(&user)
-	if user.ID == uuid.Nil {
+	if user.UserID == uuid.Nil {
 		return c.Status(400).JSON(fiber.Map{
 			"message": "User not found"})
 	}
@@ -63,7 +63,7 @@ func SignIn(c *fiber.Ctx) error {
 	fmt.Println("user", user)
 	//creo el jwt
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"own": user.ID,
+		"own": user.UserID,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 	//lo firmo

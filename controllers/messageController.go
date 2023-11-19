@@ -32,7 +32,7 @@ func CreateMesssage(c *fiber.Ctx) error {
 		})
 	}
 
-	message.ID = uuid.New()
+	message.MessageID = uuid.New()
 	if err := db.DB.Create(&message).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,

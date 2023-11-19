@@ -34,7 +34,7 @@ func CreatePicture(c *fiber.Ctx) error {
 		})
 	}
 
-	picture.ID = uuid.New()
+	picture.PictureID = uuid.New()
 
 	if err := db.DB.Create(&picture).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{

@@ -41,7 +41,7 @@ func CreateTravelRoute(c *fiber.Ctx) error {
 		})
 	}
 
-	travelRoute.ID = uuid.New()
+	travelRoute.TravelRouteID = uuid.New()
 
 	if err := db.DB.Create(&travelRoute).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
