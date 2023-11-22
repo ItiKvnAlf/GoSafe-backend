@@ -7,5 +7,5 @@ import (
 // Geolocation struct
 type Geolocation struct {
 	ID           uuid.UUID `gorm:"not null;unique_index" json:"id"`
-	CurrentPoint string    `gorm:"not null" json:"current_point"` // Change type
+	CurrentPoint float64   `gorm:"not null" json:"current_point"`
 }
