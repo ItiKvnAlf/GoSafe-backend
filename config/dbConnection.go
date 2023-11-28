@@ -37,7 +37,7 @@ func autoMigrate(connection *gorm.DB) error {
 		&models.Geolocation{},
 		&models.Message{},
 		&models.Picture{},
-		&models.TravelRoute{},
+		&models.Travel_route{},
 		&models.User{},
 	}
 

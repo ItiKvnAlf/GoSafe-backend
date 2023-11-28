@@ -12,21 +12,21 @@ func GetTravelRoutes(c *fiber.Ctx) error {
 
 	userID := c.Params("user_id")
 
-	var travelRoutes []models.TravelRoute
-	db.DB.Select(("id,start_point,end_point,date,user_id")).Where("user_id = ?", userID).Find(&travelRoutes)
+	var Travel_routes []models.Travel_route
+	db.DB.Select(("id,start_point,end_point,date,user_id")).Where("user_id = ?", userID).Find(&Travel_routes)
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,
 		"message": "success",
-		"data":    travelRoutes,
+		"data":    Travel_routes,
 	})
 
 }
 
 func CreateTravelRoute(c *fiber.Ctx) error {
-	var travelRoute models.TravelRoute
+	var Travel_route models.Travel_route
 
-	if err := c.BodyParser(&travelRoute); err != nil {
+	if err := c.BodyParser(&Travel_route); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"success": false,
 			"message": "Error while parsing",
@@ -34,16 +34,16 @@ func CreateTravelRoute(c *fiber.Ctx) error {
 	}
 
 	var user models.User
-	if err := db.DB.Where("id = ?", travelRoute.UserID).First(&user).Error; err != nil {
+	if err := db.DB.Where("id = ?", Travel_route.UserID).First(&user).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{
 			"success": false,
 			"message": "User not found",
 		})
 	}
 
-	travelRoute.ID = uuid.New()
+	Travel_route.ID = uuid.New()
 
-	if err := db.DB.Create(&travelRoute).Error; err != nil {
+	if err := db.DB.Create(&Travel_route).Error; err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"success": false,
 			"message": "Error while creating",
@@ -53,6 +53,6 @@ func CreateTravelRoute(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{
 		"success": true,
 		"message": "success",
-		"data":    travelRoute,
+		"data":    Travel_route,
 	})
 }
