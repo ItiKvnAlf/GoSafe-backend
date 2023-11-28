@@ -6,6 +6,9 @@ import (
 
 // PictureModel struct
 type Picture struct {
-	ID    uuid.UUID `gorm:"not null;unique_index" json:"id"`
-	Image string    `gorm:"not null;unique_index" json:"image"`
+	ID            uuid.UUID `gorm:"primaryKey;" json:"id"`
+	Image         string    `gorm:"not null;" json:"image"`
+	TravelRouteID uuid.UUID `gorm:"not null" json:"travel_route_id"`
+
+	TravelRoute Travel_route `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:TravelRouteID"`
 }
