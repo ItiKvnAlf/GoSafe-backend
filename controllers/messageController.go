@@ -122,3 +122,25 @@ func UpdateMessage(c *fiber.Ctx) error {
 		"data":    message,
 	})
 }
+
+func DeleteMessage(c *fiber.Ctx) error {
+
+	messageID := c.Params("id")
+
+	var message models.Message
+
+	db.DB.Where("id = ?", messageID).First(&message)
+	if message.ID == uuid.Nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Message not found",
+		})
+	}
+
+	db.DB.Delete(&message)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "success",
+	})
+}
