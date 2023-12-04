@@ -43,9 +43,11 @@ func Setup(app *fiber.App) {
 	messageGroup.Patch("/:id", controllers.UpdateMessage)
 	messageGroup.Delete("/:id", controllers.DeleteMessage)
 
+	//checks if the user is logged in
 	pictureGroup := app.Group("/pictures")
-	pictureGroup.Get("/", controllers.GetPictures)
-	pictureGroup.Get("/:picture_id", controllers.GetPictures)
 	pictureGroup.Post("/", controllers.CreatePicture)
-
+	pictureGroup.Get("/", controllers.GetPictures)
+	pictureGroup.Get("/:id", controllers.GetPictureById)
+	pictureGroup.Patch("/:id", controllers.UpdatePicture)
+	pictureGroup.Delete("/:id", controllers.DeletePicture)
 }
