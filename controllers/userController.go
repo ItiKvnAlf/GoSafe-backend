@@ -88,7 +88,7 @@ func GetUsers(c *fiber.Ctx) error {
 func GetUserById(c *fiber.Ctx) error {
 	var user models.User
 
-	userID := c.Params("email")
+	userID := c.Params("id")
 
 	db.DB.Where("users.id = ?", userID).Joins("Contacts").Joins("TravelRoutes").First(&user)
 	if user.ID == uuid.Nil || user.Email == "" {
