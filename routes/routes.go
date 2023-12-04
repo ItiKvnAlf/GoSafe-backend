@@ -35,11 +35,13 @@ func Setup(app *fiber.App) {
 	contactGroup.Get("/:user_id", controllers.GetContactsByUser)
 	contactGroup.Post("/", controllers.CreateContact)
 
+	//checks if the user is logged in
 	messageGroup := app.Group("/messages")
 	messageGroup.Post("/", controllers.CreateMesssage)
 	messageGroup.Get("/", controllers.GetMessages)
 	messageGroup.Get("/:id", controllers.GetMessageById)
 	messageGroup.Patch("/:id", controllers.UpdateMessage)
+	messageGroup.Delete("/:id", controllers.DeleteMessage)
 
 	pictureGroup := app.Group("/pictures")
 	pictureGroup.Get("/", controllers.GetPictures)
