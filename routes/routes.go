@@ -36,6 +36,14 @@ func Setup(app *fiber.App) {
 	contactGroup.Post("/", controllers.CreateContact)
 
 	//checks if the user is logged in
+	geolocationGroup := app.Group("/geolocations")
+	geolocationGroup.Post("/", controllers.CreateGeolocation)
+	geolocationGroup.Get("/", controllers.GetGeolocations)
+	geolocationGroup.Get("/:id", controllers.GetGeolocationById)
+	geolocationGroup.Patch("/:id", controllers.UpdateGeolocation)
+	geolocationGroup.Delete("/:id", controllers.DeleteGeolocation)
+
+	//checks if the user is logged in
 	messageGroup := app.Group("/messages")
 	messageGroup.Post("/", controllers.CreateMesssage)
 	messageGroup.Get("/", controllers.GetMessages)
