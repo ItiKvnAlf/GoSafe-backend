@@ -18,3 +18,7 @@ type User struct {
 	TravelRoutes []Travel_route `gorm:"foreignkey:UserID"`
 	Contacts     []Contact      `gorm:"foreignkey:UserID"`
 }
+
+func (User) TableName() string {
+	return "users"
+}
