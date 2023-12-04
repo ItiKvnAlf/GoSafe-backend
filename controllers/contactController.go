@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// testear si se crea el contacto con el id del usuario
 func CreateContact(c *fiber.Ctx) error {
 	var contact models.Contact
 
@@ -18,10 +17,9 @@ func CreateContact(c *fiber.Ctx) error {
 			"message": "Error while parsing",
 		})
 	}
-	var user models.User
-	userID := contact.UserID
 
-	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+	userID := contact.UserID
+	if err := db.DB.Where("users.id = ?", userID).Error; err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"success": false,
 			"message": "User not found",
@@ -46,7 +44,7 @@ func CreateContact(c *fiber.Ctx) error {
 
 func GetContacts(c *fiber.Ctx) error {
 	var contacts []models.Contact
-	db.DB.Select(("id, user_id, name, email, phone")).Find(&contacts)
+	db.DB.Find(&contacts)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
@@ -61,7 +59,7 @@ func GetContactsByUser(c *fiber.Ctx) error {
 	userID := c.Params("user_id")
 
 	var contacts []models.Contact
-	db.DB.Select("id, user_id, name, email, phone").Where("user_id = ?", userID).Find(&contacts)
+	db.DB.Where("user_id = ?", userID).Find(&contacts)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
@@ -70,16 +68,68 @@ func GetContactsByUser(c *fiber.Ctx) error {
 	})
 }
 
-func GetContactsByID(c *fiber.Ctx) error {
+func GetContactById(c *fiber.Ctx) error {
 
 	ID := c.Params("id")
 
 	var contacts []models.Contact
-	db.DB.Select("id, user_id, name, email, phone").Where("id = ?", ID).Find(&contacts)
+	db.DB.Where("id = ?", ID).Find(&contacts)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "success",
 		"data":    contacts,
+	})
+}
+
+func UpdateContact(c *fiber.Ctx) error {
+
+	ID := c.Params("id")
+
+	var contact models.Contact
+	db.DB.Where("id = ?", ID).First(&contact)
+
+	if contact.Name == "" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Contact not found",
+		})
+	}
+
+	if err := c.BodyParser(&contact); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "Error while parsing",
+		})
+	}
+
+	db.DB.Save(&contact)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Contact updated successfully",
+		"data":    contact,
+	})
+}
+
+func DeleteContact(c *fiber.Ctx) error {
+
+	ID := c.Params("id")
+
+	var contact models.Contact
+	db.DB.Where("id = ?", ID).First(&contact)
+
+	if contact.Name == "" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": "Contact not found",
+		})
+	}
+
+	db.DB.Delete(&contact)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Contact deleted successfully",
 	})
 }
