@@ -12,9 +12,7 @@ type Travel_route struct {
 	StartPoint string    `gorm:"not null" json:"start_point"`
 	EndPoint   string    `gorm:"not null" json:"end_point"`
 	Date       time.Time `gorm:"not null" json:"date"`
-	UserID     uuid.UUID `gorm:"not null" json:"user_id"`
-
-	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:UserID"`
+	UserID     uuid.UUID `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:UserID" json:"user_id"`
 
 	Message     []Message     `gorm:"foreignkey:TravelRouteID"`
 	Pictures    []Picture     `gorm:"foreignkey:TravelRouteID"`
