@@ -16,46 +16,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func GetUsers(c *fiber.Ctx) error {
-
-	//falta relacionar contactos con una funcion
-	var users []models.User
-	db.DB.Select("id, name, email, password, phone, address, profile_pic, rut").Find(&users)
-
-	return c.Status(200).JSON(fiber.Map{
-		"success": true,
-		"message": "success",
-		"data":    users,
-	})
-}
-
 // create user
 func CreateUser(c *fiber.Ctx) error {
 
-	/*
-		hacer test de que no se pueda crear un usuario con el mismo :
-		   	email
-		   	phone
-		   	rut
-
-		hacer test de que se pueda crear un usuario con el mismo :
-			address
-	*/
 	var user models.User
 
 	//verify json is correct
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(201).JSON(fiber.Map{
-			"message": "Bad request",
-			"error":   err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": "success",
+		})
 	}
 
 	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
 
 	//verify that user does not already exist
 	if user.ID != uuid.Nil {
-		return c.Status(200).JSON(fiber.Map{
-			"message": "User already registered"})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrBadRequest.Message,
+		})
 	}
 
 	//set uuid
@@ -63,13 +44,15 @@ func CreateUser(c *fiber.Ctx) error {
 
 	//set contacts
 	user.Contacts = []models.Contact{}
+	user.TravelRoutes = []models.Travel_route{}
 
 	//encrypt password
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"message": "Error encrypting password",
-			"error":   err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrBadRequest.Message,
+		})
 	}
 
 	//set password hashed
@@ -78,25 +61,65 @@ func CreateUser(c *fiber.Ctx) error {
 	//create user
 	db.DB.Create(&user)
 
-	return c.Status(201).JSON(fiber.Map{
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
 		"success": true,
-		"message": "Success",
+		"message": "success",
 		"data":    user,
 	})
 }
 
-func GetUser(c *fiber.Ctx) error {
+func GetUsers(c *fiber.Ctx) error {
+
+	//falta relacionar contactos con una funcion
+	var users []models.User
+
+	//esperar ver resultados
+	//db.DB.Select("id, name, email, password, phone, address, profile_pic, rut").Find(&users)
+
+	db.DB.Preload("Contacts").Preload("TravelRoutes").Find(&users)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "success",
+		"data":    users,
+	})
+}
+
+func GetUserById(c *fiber.Ctx) error {
 	var user models.User
 
-	userEmail := c.Params("email")
+	userID := c.Params("email")
 
-	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ?", userEmail).Find(&user).First(&user)
+	db.DB.Where("users.id = ?", userID).Joins("Contacts").Joins("TravelRoutes").First(&user)
 	if user.ID == uuid.Nil || user.Email == "" {
-		return c.Status(404).JSON(fiber.Map{"message": "User not found"})
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrNotFound.Message,
+		})
 	}
 
-	return c.Status(200).JSON(fiber.Map{
-		"success": true,
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": false,
+		"message": "success",
+		"data":    user,
+	})
+}
+
+func GetUserByEmail(c *fiber.Ctx) error {
+	var user models.User
+
+	userEmail := c.Params("id")
+
+	db.DB.Where("users.email = ?", userEmail).Joins("Contacts").Joins("TravelRoutes").First(&user)
+	if user.ID == uuid.Nil || user.Email == "" {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrNotFound.Message,
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": false,
 		"message": "success",
 		"data":    user,
 	})
@@ -104,30 +127,41 @@ func GetUser(c *fiber.Ctx) error {
 
 func UpdateUser(c *fiber.Ctx) error {
 
+	//Consultar por ingreso invalido de datos
 	userID := c.Params("id")
 
 	var user models.User
-	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
-		return c.Status(404).JSON(fiber.Map{
-			"message": "User not found"})
-	}
 
-	updatedUser := new(models.User)
+	//error: user not found
+	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrNotFound.Message,
+		})
+	}
+	var updatedUser models.User
+
+	fmt.Println("user:", user)
+
+	//error parser
 	if err := c.BodyParser(updatedUser); err != nil {
-		return c.Status(400).JSON(fiber.Map{
-			"message": "Bad Request",
-			"error":   err})
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrBadRequest.Message,
+		})
 	}
 
 	user.Name = updatedUser.Name
-	user.Email = updatedUser.Email
+
+	//para actualizar el correo debiera verificarlo con su codigo similar ala contraseña
+	//user.Email = updatedUser.Email
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"message": "Error encrypting password",
-			"error":   err})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": fiber.ErrInternalServerError.Message})
 	}
+
 	user.Password = string(hash)
 
 	user.Phone = updatedUser.Phone
@@ -136,7 +170,7 @@ func UpdateUser(c *fiber.Ctx) error {
 
 	db.DB.Save(&user)
 
-	return c.Status(200).JSON(fiber.Map{
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"success": true,
 		"message": "Usuario actualizado exitosamente",
 		"data":    user,

@@ -13,7 +13,7 @@ func GetPictures(c *fiber.Ctx) error {
 	PictureID := c.Params("picture_id")
 
 	var pictures []models.Picture
-	db.DB.Select(("id,image")).Where("picture_id = ?", PictureID).Find(&pictures)
+	db.DB.Select(("id,image,travel_route_id")).Where("picture_id = ?", PictureID).Find(&pictures)
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,

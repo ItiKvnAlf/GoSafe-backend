@@ -8,12 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetMessageTravel(c *fiber.Ctx) error {
+func GetMessages(c *fiber.Ctx) error {
 
 	ID := c.Params("messageID")
 
 	var message []models.Message
-	db.DB.Select(("id,default_message")).Where("messageID = ?", ID).Find(&message)
+	db.DB.Select(("id,default_message,travel_route_id")).Where("messageID = ?", ID).Find(&message)
 
 	return c.Status(200).JSON(fiber.Map{
 		"success": true,

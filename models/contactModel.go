@@ -10,7 +10,5 @@ type Contact struct {
 	UserID uuid.UUID `gorm:"not null" json:"user_id"`
 	Name   string    `gorm:"not null;" json:"name"`
 	Email  string    `gorm:"not null;" json:"email"`
-	Phone  string    `gorm:"not null;" json:"phone"`
-
-	User User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:UserID"`
+	Phone  string    `gorm:"not null;unique;" json:"phone"`
 }

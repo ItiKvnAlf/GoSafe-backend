@@ -10,13 +10,16 @@ func Setup(app *fiber.App) {
 
 	userGroup := app.Group("/users")
 
-	userGroup.Get("/", controllers.GetUsers)
 	userGroup.Post("/", controllers.CreateUser)
 	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
-	userGroup.Get("/:email", controllers.GetUser)
+	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
+
+	userGroup.Get("/", controllers.GetUsers)
+	//userGroup.Get("/:email", controllers.GetUserByEmail)
+	userGroup.Get("/:id", controllers.GetUserById)
+
 	userGroup.Put("/changePassword/", controllers.UpdatePassword)
 	userGroup.Put("/:id", controllers.UpdateUser)
-	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
 
 	authGroup := app.Group("/auth")
 
@@ -26,21 +29,24 @@ func Setup(app *fiber.App) {
 	contactGroup := app.Group("/contacts")
 
 	contactGroup.Get("/", controllers.GetContacts)
-	contactGroup.Get("/:user_id", controllers.GetContactUser)
+	contactGroup.Get("/:user_id", controllers.GetContactsByUser)
 	contactGroup.Post("/", controllers.CreateContact)
 
 	messageGroup := app.Group("/messages")
 
-	messageGroup.Get("/:travel_route_id", controllers.GetMessageTravel)
+	messageGroup.Get("/", controllers.GetMessages)
+	messageGroup.Get("/:travel_route_id", controllers.GetMessages)
 	messageGroup.Post("/", controllers.CreateMesssage)
 
 	pictureGroup := app.Group("/pictures")
 
+	pictureGroup.Get("/", controllers.GetPictures)
 	pictureGroup.Get("/:picture_id", controllers.GetPictures)
 	pictureGroup.Post("/", controllers.CreatePicture)
 
-	travelRouteGroup := app.Group("/travel_routes")
+	travelRouteGroup := app.Group("/travel-routes")
 
+	travelRouteGroup.Get("/", controllers.GetTravelRoutes)
 	travelRouteGroup.Get("/:user_id", controllers.GetTravelRoutes)
 	travelRouteGroup.Post("/", controllers.CreateTravelRoute)
 
