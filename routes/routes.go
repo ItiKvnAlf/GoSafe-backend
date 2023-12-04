@@ -8,6 +8,10 @@ import (
 
 func Setup(app *fiber.App) {
 
+	authGroup := app.Group("/auth")
+	authGroup.Post("/signUp", controllers.SignUp)
+	authGroup.Post("/signIn", controllers.SignIn)
+
 	userGroup := app.Group("/users")
 	userGroup.Post("/", controllers.CreateUser)
 	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
@@ -19,21 +23,21 @@ func Setup(app *fiber.App) {
 	userGroup.Put("/:id", controllers.UpdateUser)
 
 	//checks if the user is logged in
+	contactGroup := app.Group("/contacts")
+	contactGroup.Post("/", controllers.CreateContact)
+	contactGroup.Get("/", controllers.GetContacts)
+	contactGroup.Get("/:id", controllers.GetContactById)
+	//contactGroup.Get("/:user_id", controllers.GetContactsByUser)
+	contactGroup.Patch("/:id", controllers.UpdateContact)
+	contactGroup.Delete("/:id", controllers.DeleteContact)
+
+	//checks if the user is logged in
 	travelRouteGroup := app.Group("/travel-routes")
 	travelRouteGroup.Get("/", controllers.GetTravelRoutes)
 	travelRouteGroup.Get("/:id", controllers.GetTravelRoutesById)
 	travelRouteGroup.Post("/", controllers.CreateTravelRoute)
 	travelRouteGroup.Patch("/:id", controllers.UpdateTravelRoute)
 	travelRouteGroup.Delete("/:id", controllers.DeleteTravelRoute)
-
-	authGroup := app.Group("/auth")
-	authGroup.Post("/signUp", controllers.SignUp)
-	authGroup.Post("/signIn", controllers.SignIn)
-
-	contactGroup := app.Group("/contacts")
-	contactGroup.Get("/", controllers.GetContacts)
-	contactGroup.Get("/:user_id", controllers.GetContactsByUser)
-	contactGroup.Post("/", controllers.CreateContact)
 
 	//checks if the user is logged in
 	geolocationGroup := app.Group("/geolocations")

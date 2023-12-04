@@ -29,7 +29,7 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	db.DB.Select("id,name,email,password,phone,address,profile_pic, rut").Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
+	db.DB.Where("email = ? or rut = ? or phone = ?", user.Email, user.Rut, user.Phone).First(&user)
 
 	//verify that user does not already exist
 	if user.ID != uuid.Nil {
@@ -39,7 +39,6 @@ func CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	//set uuid
 	user.ID = uuid.New()
 
 	//set contacts
