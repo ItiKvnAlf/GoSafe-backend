@@ -89,7 +89,7 @@ func GetUserById(c *fiber.Ctx) error {
 
 	userID := c.Params("id")
 
-	db.DB.Where("users.id = ?", userID).Joins("Contacts").Joins("TravelRoutes").First(&user)
+	db.DB.Where("users.id = ?", userID).Preload("Contacts").Preload("TravelRoutes").First(&user)
 	if user.ID == uuid.Nil || user.Email == "" {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"success": false,
@@ -104,6 +104,7 @@ func GetUserById(c *fiber.Ctx) error {
 	})
 }
 
+// update function
 func GetUserByEmail(c *fiber.Ctx) error {
 	var user models.User
 
@@ -138,12 +139,19 @@ func UpdateUser(c *fiber.Ctx) error {
 			"message": fiber.ErrNotFound.Message,
 		})
 	}
-	var updatedUser models.User
 
-	fmt.Println("user:", user)
+	type UpdatedUser struct {
+		Name       string `json:"name"`
+		Address    string `json:"address"`
+		ProfilePic string `json:"profile_pic"`
+		Password   string `json:"password"`
+	}
+
+	updatedUser := new(UpdatedUser)
 
 	//error parser
-	if err := c.BodyParser(updatedUser); err != nil {
+	err := c.BodyParser(&updatedUser)
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": fiber.ErrBadRequest.Message,
@@ -160,10 +168,8 @@ func UpdateUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": fiber.ErrInternalServerError.Message})
 	}
-
 	user.Password = string(hash)
 
-	user.Phone = updatedUser.Phone
 	user.Address = updatedUser.Address
 	user.ProfilePic = updatedUser.ProfilePic
 
@@ -179,6 +185,27 @@ func UpdateUser(c *fiber.Ctx) error {
 func VerifyPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
+}
+
+func DeleteUser(c *fiber.Ctx) error {
+	userID := c.Params("id")
+
+	var user models.User
+
+	//error: user not found
+	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrNotFound.Message,
+		})
+	}
+
+	db.DB.Delete(&user)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Usuario eliminado exitosamente",
+	})
 }
 
 func SendEmailVerification(c *fiber.Ctx) error {

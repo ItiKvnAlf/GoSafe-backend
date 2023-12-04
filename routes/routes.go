@@ -20,7 +20,9 @@ func Setup(app *fiber.App) {
 	//userGroup.Get("/:email", controllers.GetUserByEmail)
 	userGroup.Get("/:id", controllers.GetUserById)
 	userGroup.Put("/changePassword/", controllers.UpdatePassword)
-	userGroup.Put("/:id", controllers.UpdateUser)
+	userGroup.Patch("/:id", controllers.UpdateUser)
+
+	//falta delete user: revisar si es necesario
 
 	//checks if the user is logged in
 	contactGroup := app.Group("/contacts")
