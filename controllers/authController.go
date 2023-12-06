@@ -3,7 +3,6 @@ package controllers
 import (
 	db "backend/config"
 	"backend/models"
-	"fmt"
 	"os"
 	"time"
 
@@ -52,7 +51,6 @@ func SignIn(c *fiber.Ctx) error {
 
 	//verify password
 	passwordGood := VerifyPassword(body.Password, user.Password)
-	fmt.Println("password verify : ", passwordGood)
 	if !passwordGood {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Wrong password"})
