@@ -2,15 +2,25 @@ package routes
 
 import (
 	"backend/controllers"
+	"backend/middleware"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func Setup(app *fiber.App) {
 
+	//rutas publicas
+
 	authGroup := app.Group("/auth")
 	authGroup.Post("/signUp", controllers.SignUp)
 	authGroup.Post("/signIn", controllers.SignIn)
+
+	//middleware global ... para desabilitarlo comentelo
+	AuthMiddleware := middleware.AuthMiddleware()
+
+	app.Use(AuthMiddleware)
+
+	//rutas protegidas
 
 	userGroup := app.Group("/users")
 	userGroup.Post("/", controllers.CreateUser)
