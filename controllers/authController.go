@@ -4,15 +4,12 @@ import (
 	db "backend/config"
 	"backend/models"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
-)
-
-const (
-	jwt_secret = "secret"
 )
 
 func SignUp(c *fiber.Ctx) error {
@@ -68,7 +65,7 @@ func SignIn(c *fiber.Ctx) error {
 	})
 
 	//lo firmo
-	tokenString, err := token.SignedString([]byte(jwt_secret))
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "Token Expired or invalid",
