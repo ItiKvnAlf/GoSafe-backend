@@ -33,12 +33,12 @@ func Connect() {
 func autoMigrate(connection *gorm.DB) error {
 
 	modelsToMigrate := []interface{}{
+		&models.User{},
 		&models.Contact{},
 		&models.Geolocation{},
 		&models.Message{},
 		&models.Picture{},
 		&models.Travel_route{},
-		&models.User{},
 	}
 
 	if err := connection.AutoMigrate(modelsToMigrate...); err != nil {
