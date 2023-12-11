@@ -158,17 +158,19 @@ func UpdateUser(c *fiber.Ctx) error {
 		})
 	}
 
+	fmt.Println(updatedUser)
 	user.Name = updatedUser.Name
 
 	//para actualizar el correo debiera verificarlo con su codigo similar ala contraseña
 	//user.Email = updatedUser.Email
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": fiber.ErrInternalServerError.Message})
+	if updatedUser.Password != "" {
+		hash, err := bcrypt.GenerateFromPassword([]byte(updatedUser.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"message": fiber.ErrInternalServerError.Message})
+		}
+		user.Password = string(hash)
 	}
-	user.Password = string(hash)
 
 	user.Address = updatedUser.Address
 	user.ProfilePic = updatedUser.ProfilePic
