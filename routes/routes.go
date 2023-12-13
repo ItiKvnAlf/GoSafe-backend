@@ -27,7 +27,7 @@ func Setup(app *fiber.App) {
 	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
 	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
 	userGroup.Get("/", controllers.GetUsers)
-	//userGroup.Get("/:email", controllers.GetUserByEmail)
+	userGroup.Get("/email/:email", controllers.GetUserByEmail)
 	userGroup.Get("/:id", controllers.GetUserById)
 	userGroup.Put("/changePassword/", controllers.UpdatePassword)
 	userGroup.Patch("/:id", controllers.UpdateUser)

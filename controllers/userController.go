@@ -25,7 +25,7 @@ func CreateUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
-			"message": "success",
+			"message": fiber.ErrBadRequest.Message,
 		})
 	}
 
