@@ -24,12 +24,7 @@ func main() {
 
 	//create fiber app
 	app := fiber.New()
-	app.Use(cors.New(
-		cors.Config{
-			AllowCredentials: true,
-			AllowOrigins:     "*",
-		},
-	))
+	app.Use(cors.New())
 
 	app.Use(logger.New(logger.Config{
 		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
