@@ -184,6 +184,28 @@ func UpdateUser(c *fiber.Ctx) error {
 	})
 }
 
+// Para eliminar un usuario igual deberia verificarlo con su codigo similar a la contraseña
+func DeleteUserById(c *fiber.Ctx) error {
+	userID := c.Params("id")
+
+	var user models.User
+
+	//error: user not found
+	if err := db.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"success": false,
+			"message": fiber.ErrNotFound.Message,
+		})
+	}
+
+	db.DB.Delete(&user)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"success": true,
+		"message": "Usuario eliminado exitosamente",
+	})
+}
+
 func VerifyPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
