@@ -17,6 +17,9 @@ func Setup(app *fiber.App) {
 
 	userGroup := app.Group("/users")
 	userGroup.Get("/email/:email", controllers.GetUserByEmail)
+	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
+	userGroup.Put("/changePassword/", controllers.UpdatePassword)
+	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
 
 	//middleware global ... para desabilitarlo comentelo
 	AuthMiddleware := middleware.AuthMiddleware()
@@ -26,11 +29,8 @@ func Setup(app *fiber.App) {
 	//rutas protegidas
 
 	userGroup.Post("/", controllers.CreateUser)
-	userGroup.Post("/verifyCode", controllers.CompareHashedCode)
-	userGroup.Post("/resetPassword/:email", controllers.SendEmailVerification)
 	userGroup.Get("/", controllers.GetUsers)
 	userGroup.Get("/:id", controllers.GetUserById)
-	userGroup.Put("/changePassword/", controllers.UpdatePassword)
 	userGroup.Patch("/:id", controllers.UpdateUser)
 
 	//falta delete user: revisar si es necesario
