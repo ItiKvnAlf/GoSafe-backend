@@ -98,7 +98,7 @@ func GetUserById(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": false,
+		"success": true,
 		"message": "success",
 		"data":    user,
 	})
@@ -110,7 +110,7 @@ func GetUserByEmail(c *fiber.Ctx) error {
 
 	userEmail := c.Params("email")
 
-	db.DB.Where("users.email = ?", userEmail).Joins("Contacts").Joins("TravelRoutes").First(&user)
+	db.DB.Where("users.email = ?", userEmail).Preload("Contacts").Preload("TravelRoutes").First(&user)
 	if user.ID == uuid.Nil || user.Email == "" {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"success": false,
@@ -119,7 +119,7 @@ func GetUserByEmail(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"success": false,
+		"success": true,
 		"message": "success",
 		"data":    user,
 	})
